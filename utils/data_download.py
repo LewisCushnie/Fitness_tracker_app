@@ -6,6 +6,7 @@ from os.path import exists
 from datetime import date
 import os
 import time
+import json
 
 def get_strava_refresh_token(CLIENT_ID, CLIENT_SECRET):
 
@@ -47,22 +48,22 @@ def get_strava_refresh_token(CLIENT_ID, CLIENT_SECRET):
     else:
         print('Access token has not expired yet...')
 
-def get_strava_tokens(CLIENT_ID, CLIENT_SECRET):
+def get_strava_tokens(CLIENT_ID, CLIENT_SECRET, code, reset):
     '''
+    http://www.strava.com/oauth/authorize?client_id=98967&response_type=code&redirect_uri=http://localhost/exchange_token&approval_prompt=force&scope=profile:read_all,activity:read_all
     
     '''
 
     # Make Strava auth API call with your 
     #  client_code, client_secret and code
-    first_time = False
-    if first_time:
+    if reset:
         response = requests.post(
                             url = 'https://www.strava.com/oauth/token',
                             data = {
                                     'client_id': CLIENT_ID,
                                     'client_secret': CLIENT_SECRET,
                                     # code changes each time
-                                    'code': 'b2464d8c8b50fa4eeda96a0589deaa10c9a92604',
+                                    'code': code,
                                     'grant_type': 'authorization_code'
                                     }
                         )
@@ -74,12 +75,35 @@ def get_strava_tokens(CLIENT_ID, CLIENT_SECRET):
         with open('utils/access_tokens/strava_tokens.json', 'w') as outfile:
             json.dump(strava_tokens, outfile)
 
-        # Open JSON file and print the file contents 
-        # to check it's worked properly
-        with open('utils/access_tokens/strava_tokens.json') as check:
-            data = json.load(check)
+def get_maps_data():
+    google_maps_df = pd.read_json('google_maps/Saved Places.json')
 
-        print(data)
+    # load data using Python JSON module
+    with open('google_maps/Saved Places.json','r') as f:
+        data = json.loads(f.read())
+
+    # Flatten data
+    google_maps_df = pd.json_normalize(data, record_path =['features'])
+
+    # get necessary columns
+    google_maps_df = google_maps_df[['properties.Title', 'geometry.coordinates']]
+
+    return google_maps_df
+
+def get_key_locations():
+
+    data = {
+    "Location": ["Tokei Martial Arts"
+                ,"Home"
+                ,"Office"],
+    "Lat": [51.5035157, 51.4723345, 51.514418899999995],                
+    "Long": [-0.0814162, -0.0421276, -0.0830479]
+    }
+
+    #load data into a DataFrame object:
+    maps_data = pd.DataFrame(data)
+
+    return maps_data
 
 def get_strava_data(current_date):
 
@@ -118,7 +142,6 @@ def get_strava_data(current_date):
 
     # (3) if the file does not already exist, create dataframe and pickle it 
     if not file_exists:
-        print(f'creating strava_activity_data_{current_date}.pkl file...')
 
         # Get the tokens from file to connect to Strava
         with open('utils/access_tokens/strava_tokens.json') as json_file:
@@ -186,11 +209,25 @@ def get_strava_data(current_date):
             # pickle the new dataframe
             activities.to_pickle(strava_data_file) 
 
+            print(f'creating strava_activity_data_{current_date}.pkl file...')
+
+            # ------------------------
+            # TRANSFORMATIONS:
+            # ------------------------
+
+            # split the latlng column into seperate lat and long columns
+            activities[['start_lat','start_long']] = pd.DataFrame(activities['start_latlng'].tolist()
+                                                                    , index= activities.index)
+
+            activities[['end_lat','end_long']] = pd.DataFrame(activities['end_latlng'].tolist()
+                                                                    , index= activities.index)
+
     # (4) if the file already exists, return the data from the pickle file
     else:
-        print(f'Loading strava_activity_data_{current_date}.pkl file...')
 
         # get the data from the pickle file
         activities = pd.read_pickle(strava_data_file)
+
+        print(f'Loading strava_activity_data_{current_date}.pkl file...')
 
     return activities

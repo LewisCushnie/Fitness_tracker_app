@@ -10,6 +10,8 @@ def get_secrets():
     # if running locally from lewiscushnie's computer, get nv variables from .env
     if current_user == 'lewiscushnie':
         print('get secrets from local .env file')
+        from dotenv import load_dotenv
+        load_dotenv()
 
         CLIENT_ID = os.getenv('CLIENT_ID')
         CLIENT_SECRET = os.getenv('CLIENT_SECRET')
