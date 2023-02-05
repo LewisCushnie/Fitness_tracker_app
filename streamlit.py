@@ -28,8 +28,7 @@ with open("streamlit_utils/style.css") as f:
     st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
 st.title('Fitness Stats')
-line = '---'
-st.markdown(line)
+st.info('This application is for tracking my personal activites over time')
 
 # ================================================================
 # ================= GET DATA AND SET CONTEXT =====================
@@ -44,82 +43,17 @@ activities = dd.get_strava_data(current_date)
 # get maps locations
 maps_data = dd.get_key_locations()
 
-# ================================================================
-# ========== ADD ADDITIONAL COLUMNS TO ACTIVITIES DF =============
-# ================================================================
 
-# # find matching locations in key locations from maps_data
-# # create Balltree model
-# coords = np.radians(maps_data[['Lat', 'Long']])
-# dist = DistanceMetric.get_metric('haversine')
-# tree = BallTree(coords, metric=dist)
 
-# # find matching start locations
-# coords = np.radians(activities[['start_lat', 'start_long']])
-# distances, indices = tree.query(coords, k=1)
-
-# # create new columns 
-# activities['start_location'] = maps_data['Location'].iloc[indices.flatten()].values
-# activities['start_distance_diff'] = distances.flatten()
-
-# # find matching end locations
-# coords = np.radians(activities[['end_lat', 'end_long']])
-# distances, indices = tree.query(coords, k=1)
-
-# # create new columns 
-# activities['end_location'] = maps_data['Location'].iloc[indices.flatten()].values
-# activities['end_distance_diff'] = distances.flatten()
-
-# # find locations where distance diff to high -> label as 'other'
-# max_diff = 0.0099
-# error_too_high_mask = activities['start_distance_diff'] > max_diff
-# error_too_high_mask = activities['end_distance_diff'] > max_diff
-# activities['start_location'][error_too_high_mask] = 'Other'
-# activities['end_location'][error_too_high_mask] = 'Other'
-
-# # convert the 'Date' column to datetime format
-# activities['start_date_local']= pd.to_datetime(activities['start_date_local']).dt.date
-
-# # convert distance from m -> km
-# activities['distance'] = activities['distance'].div(1000)
-# # convert time from s -> min
-# activities['moving_time'] = activities['moving_time'].div(60)
-# activities['elapsed_time'] = activities['elapsed_time'].div(60)
-
-# # fill in for missing dates by creating date range from date(min) -> date(max), then left joining
-# range = pd.date_range(start= activities['start_date_local'].min(), end= current_date, freq="D")
-# date_df = pd.DataFrame(range, columns=['date'])
-# date_df['date']= pd.to_datetime(date_df['date']).dt.date
-
-# # left join to date range in order to add dates with no activities
-# activities = pd.merge(date_df, activities, how='left', left_on='date', right_on= 'start_date_local')
-
-# # replace certain columns N/A for 0 for aggregration and graphing
-# fill_na_with_zero = ['distance'
-#                     ,'moving_time'
-#                     ,'elapsed_time'
-#                     ,'total_elevation_gain'
-#                     ,'average_speed'
-#                     ,'max_speed'
-#                     ,'elev_high'
-#                     ,'elev_low']
-
-# activities[fill_na_with_zero] = activities[fill_na_with_zero].fillna(0)
-# activities['type'] = activities['type'].fillna('null')
-
-# # rename columns
-# activities.rename(columns = {'distance':'distance (km)'
-#                             ,'moving_time': 'moving time (min)'
-#                             ,'elapsed_time': 'elapsed time (min)'
-#                             ,'total_elevation_gain': 'total elevation gain (m)'
-#                             ,'average_speed': 'average speed (m/s)'
-#                             ,'max_speed': 'max speed (m/s)'
-#                             ,'elev_high': 'elev high (m)'
-#                             ,'elev_low': 'elev low (m)'}, inplace = True)
+st.write(activities)
 
 # ================================================================
 # ===================== SET GLOBAL VARIABLES =====================
 # ================================================================    
+
+line = '---'
+st.markdown(line)
+st.header('Set Global Variables')
 
 # select start and end date range for app widgets
 col1, col2 = st.columns(2)
@@ -139,8 +73,64 @@ activities = activities.loc[mask]
 # ========================= PLOTTING =============================
 # ================================================================  
 
+# ----------------------------------------------------------------
+# ----------------------- SUMMARY STATS --------------------------
+# ----------------------------------------------------------------
+
+line = '---'
+st.markdown(line)
+st.header('Summary Stats')
+
+col1, col2, col3, col4 = st.columns(4)
+
+# total gym visits over time period
+with col1: 
+    count_tokei_start = activities['start_location'].str.count("Tokei").sum()
+    count_tokei_end = activities['end_location'].str.count("Tokei").sum()
+    total_gym_visits = max(count_tokei_start, count_tokei_end)
+    st.metric('Total gym visits', total_gym_visits)
+
+with col2:
+    # total number of days I cycled
+    count_cycle = activities['type'].str.count("Ride").sum()
+    st.metric('Total days cycled', count_cycle)
+
+with col3:
+    # total distance cycled
+    ride_mask = (activities['type'] == 'Ride')
+    ride_distance = activities['distance (km)'][ride_mask].sum()
+    st.metric('Total distance riden (km)', ride_distance)
+
+with col4:
+    # total distance cycled
+    run_mask = (activities['type'] == 'Run')
+    run_distance = activities['distance (km)'][run_mask].sum()
+    st.metric('Total distance run (km)', run_distance)
+
+# ----------------------------------------------------------------
+# ----------------------- COUNTER --------------------------------
+# ----------------------------------------------------------------
+
 st.write(line)
-st.header('Activity')
+st.header('Count of Activities Over Time')
+
+chart = alt.Chart(activities).mark_tick().encode(
+    x=alt.X('date:O',
+            title='Count',
+            axis=alt.Axis(values=[0], ticks=True, grid=False, labels=False),
+            scale=alt.Scale()),
+    y='type:N',
+    color='type:N'
+)
+
+st.altair_chart(chart, use_container_width= True, theme= 'streamlit')
+
+# ----------------------------------------------------------------
+# ----------------------- DISTANCE -------------------------------
+# ----------------------------------------------------------------
+
+st.write(line)
+st.header('Distance covered from Running and Riding')
 
 chart = alt.Chart(activities).mark_bar().encode(
     x='date:O',
