@@ -2,12 +2,11 @@ import streamlit as st
 import utils.data_download as dd
 from datetime import date
 import pandas as pd
-import geopandas as gpd
 import numpy as np
 import altair as alt
 from sklearn.neighbors import BallTree
 from sklearn.metrics import DistanceMetric
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 st.set_page_config(
@@ -93,6 +92,7 @@ activities['elapsed_time'] = activities['elapsed_time'].div(60)
 range = pd.date_range(start= activities['start_date_local'].min(), end= current_date, freq="D")
 date_df = pd.DataFrame(range, columns=['date'])
 date_df['date']= pd.to_datetime(date_df['date']).dt.date
+
 # left join to date range in order to add dates with no activities
 activities = pd.merge(date_df, activities, how='left', left_on='date', right_on= 'start_date_local')
 
@@ -126,7 +126,8 @@ activities.rename(columns = {'distance':'distance (km)'
 # select start and end date range for app widgets
 col1, col2 = st.columns(2)
 with col1:
-    global_start = st.date_input('Start of timeframe')
+    d = timedelta(days = 30)
+    global_start = st.date_input('Start of timeframe', value = current_date - d)
 
 with col2:
     global_end = st.date_input('End of timeframe', value= current_date)
@@ -150,8 +151,6 @@ chart = alt.Chart(activities).mark_bar().encode(
 )
 
 st.altair_chart(chart, use_container_width= True, theme= 'streamlit')
-
-
 
 # # Create altair chart
 # chart = alt.Chart(TABLE_AND_VIEW_BREAKDOWN_df.reset_index()).transform_fold(
