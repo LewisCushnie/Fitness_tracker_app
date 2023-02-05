@@ -4,8 +4,6 @@ from datetime import date
 import pandas as pd
 import numpy as np
 import altair as alt
-from sklearn.neighbors import BallTree
-from sklearn.metrics import DistanceMetric
 from datetime import datetime, timedelta
 
 
@@ -50,74 +48,74 @@ maps_data = dd.get_key_locations()
 # ========== ADD ADDITIONAL COLUMNS TO ACTIVITIES DF =============
 # ================================================================
 
-# find matching locations in key locations from maps_data
-# create Balltree model
-coords = np.radians(maps_data[['Lat', 'Long']])
-dist = DistanceMetric.get_metric('haversine')
-tree = BallTree(coords, metric=dist)
+# # find matching locations in key locations from maps_data
+# # create Balltree model
+# coords = np.radians(maps_data[['Lat', 'Long']])
+# dist = DistanceMetric.get_metric('haversine')
+# tree = BallTree(coords, metric=dist)
 
-# find matching start locations
-coords = np.radians(activities[['start_lat', 'start_long']])
-distances, indices = tree.query(coords, k=1)
+# # find matching start locations
+# coords = np.radians(activities[['start_lat', 'start_long']])
+# distances, indices = tree.query(coords, k=1)
 
-# create new columns 
-activities['start_location'] = maps_data['Location'].iloc[indices.flatten()].values
-activities['start_distance_diff'] = distances.flatten()
+# # create new columns 
+# activities['start_location'] = maps_data['Location'].iloc[indices.flatten()].values
+# activities['start_distance_diff'] = distances.flatten()
 
-# find matching end locations
-coords = np.radians(activities[['end_lat', 'end_long']])
-distances, indices = tree.query(coords, k=1)
+# # find matching end locations
+# coords = np.radians(activities[['end_lat', 'end_long']])
+# distances, indices = tree.query(coords, k=1)
 
-# create new columns 
-activities['end_location'] = maps_data['Location'].iloc[indices.flatten()].values
-activities['end_distance_diff'] = distances.flatten()
+# # create new columns 
+# activities['end_location'] = maps_data['Location'].iloc[indices.flatten()].values
+# activities['end_distance_diff'] = distances.flatten()
 
-# find locations where distance diff to high -> label as 'other'
-max_diff = 0.0099
-error_too_high_mask = activities['start_distance_diff'] > max_diff
-error_too_high_mask = activities['end_distance_diff'] > max_diff
-activities['start_location'][error_too_high_mask] = 'Other'
-activities['end_location'][error_too_high_mask] = 'Other'
+# # find locations where distance diff to high -> label as 'other'
+# max_diff = 0.0099
+# error_too_high_mask = activities['start_distance_diff'] > max_diff
+# error_too_high_mask = activities['end_distance_diff'] > max_diff
+# activities['start_location'][error_too_high_mask] = 'Other'
+# activities['end_location'][error_too_high_mask] = 'Other'
 
-# convert the 'Date' column to datetime format
-activities['start_date_local']= pd.to_datetime(activities['start_date_local']).dt.date
+# # convert the 'Date' column to datetime format
+# activities['start_date_local']= pd.to_datetime(activities['start_date_local']).dt.date
 
-# convert distance from m -> km
-activities['distance'] = activities['distance'].div(1000)
-# convert time from s -> min
-activities['moving_time'] = activities['moving_time'].div(60)
-activities['elapsed_time'] = activities['elapsed_time'].div(60)
+# # convert distance from m -> km
+# activities['distance'] = activities['distance'].div(1000)
+# # convert time from s -> min
+# activities['moving_time'] = activities['moving_time'].div(60)
+# activities['elapsed_time'] = activities['elapsed_time'].div(60)
 
-# fill in for missing dates by creating date range from date(min) -> date(max), then left joining
-range = pd.date_range(start= activities['start_date_local'].min(), end= current_date, freq="D")
-date_df = pd.DataFrame(range, columns=['date'])
-date_df['date']= pd.to_datetime(date_df['date']).dt.date
+# # fill in for missing dates by creating date range from date(min) -> date(max), then left joining
+# range = pd.date_range(start= activities['start_date_local'].min(), end= current_date, freq="D")
+# date_df = pd.DataFrame(range, columns=['date'])
+# date_df['date']= pd.to_datetime(date_df['date']).dt.date
 
-# left join to date range in order to add dates with no activities
-activities = pd.merge(date_df, activities, how='left', left_on='date', right_on= 'start_date_local')
+# # left join to date range in order to add dates with no activities
+# activities = pd.merge(date_df, activities, how='left', left_on='date', right_on= 'start_date_local')
 
-# replace certain columns N/A for 0 for aggregration and graphing
-fill_na_with_zero = ['distance'
-                    ,'moving_time'
-                    ,'elapsed_time'
-                    ,'total_elevation_gain'
-                    ,'average_speed'
-                    ,'max_speed'
-                    ,'elev_high'
-                    ,'elev_low']
+# # replace certain columns N/A for 0 for aggregration and graphing
+# fill_na_with_zero = ['distance'
+#                     ,'moving_time'
+#                     ,'elapsed_time'
+#                     ,'total_elevation_gain'
+#                     ,'average_speed'
+#                     ,'max_speed'
+#                     ,'elev_high'
+#                     ,'elev_low']
 
-activities[fill_na_with_zero] = activities[fill_na_with_zero].fillna(0)
-activities['type'] = activities['type'].fillna('null')
+# activities[fill_na_with_zero] = activities[fill_na_with_zero].fillna(0)
+# activities['type'] = activities['type'].fillna('null')
 
-# rename columns
-activities.rename(columns = {'distance':'distance (km)'
-                            ,'moving_time': 'moving time (min)'
-                            ,'elapsed_time': 'elapsed time (min)'
-                            ,'total_elevation_gain': 'total elevation gain (m)'
-                            ,'average_speed': 'average speed (m/s)'
-                            ,'max_speed': 'max speed (m/s)'
-                            ,'elev_high': 'elev high (m)'
-                            ,'elev_low': 'elev low (m)'}, inplace = True)
+# # rename columns
+# activities.rename(columns = {'distance':'distance (km)'
+#                             ,'moving_time': 'moving time (min)'
+#                             ,'elapsed_time': 'elapsed time (min)'
+#                             ,'total_elevation_gain': 'total elevation gain (m)'
+#                             ,'average_speed': 'average speed (m/s)'
+#                             ,'max_speed': 'max speed (m/s)'
+#                             ,'elev_high': 'elev high (m)'
+#                             ,'elev_low': 'elev low (m)'}, inplace = True)
 
 # ================================================================
 # ===================== SET GLOBAL VARIABLES =====================
