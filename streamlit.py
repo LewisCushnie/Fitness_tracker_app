@@ -27,7 +27,7 @@ for key in st.session_state:
 with open("streamlit_utils/style.css") as f:
     st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
-st.title('Fitness Stats')
+st.title('Fitness Stats 🏃 🏋️ 🚴')
 st.info('This application is for tracking my personal activites over time')
 
 # ================================================================
@@ -42,10 +42,6 @@ activities = dd.get_strava_data(current_date)
 
 # get maps locations
 maps_data = dd.get_key_locations()
-
-
-
-st.write(activities)
 
 # ================================================================
 # ===================== SET GLOBAL VARIABLES =====================
@@ -79,7 +75,7 @@ activities = activities.loc[mask]
 
 line = '---'
 st.markdown(line)
-st.header('Summary Stats')
+st.header('Summary Stats For Selected Time Period')
 
 col1, col2, col3, col4 = st.columns(4)
 
@@ -88,42 +84,51 @@ with col1:
     count_tokei_start = activities['start_location'].str.count("Tokei").sum()
     count_tokei_end = activities['end_location'].str.count("Tokei").sum()
     total_gym_visits = max(count_tokei_start, count_tokei_end)
-    st.metric('Total gym visits', total_gym_visits)
+    st.metric('Total gym visits', int(total_gym_visits))
 
 with col2:
     # total number of days I cycled
     count_cycle = activities['type'].str.count("Ride").sum()
-    st.metric('Total days cycled', count_cycle)
+    st.metric('Total cycle rides', count_cycle)
 
 with col3:
     # total distance cycled
     ride_mask = (activities['type'] == 'Ride')
     ride_distance = activities['distance (km)'][ride_mask].sum()
-    st.metric('Total distance riden (km)', ride_distance)
+    st.metric('Total distance riden (km)', round(ride_distance, 1))
 
 with col4:
     # total distance cycled
     run_mask = (activities['type'] == 'Run')
     run_distance = activities['distance (km)'][run_mask].sum()
-    st.metric('Total distance run (km)', run_distance)
+    st.metric('Total distance run (km)', round(run_distance, 1))
 
 # ----------------------------------------------------------------
 # ----------------------- COUNTER --------------------------------
 # ----------------------------------------------------------------
-
 st.write(line)
-st.header('Count of Activities Over Time')
+st.header('Activity Tracker')
 
-chart = alt.Chart(activities).mark_tick().encode(
-    x=alt.X('date:O',
-            title='Count',
-            axis=alt.Axis(values=[0], ticks=True, grid=False, labels=False),
-            scale=alt.Scale()),
-    y='type:N',
-    color='type:N'
-)
+# group the activities dataframe to get a day-by-day count
+activities_by_date = activities.groupby("date")[["ride_count", "run_count", "tokei_count"]].sum()
 
-st.altair_chart(chart, use_container_width= True, theme= 'streamlit')
+# add emoji columns
+did_run_mask = (activities_by_date['run_count'] >= 1)
+activities_by_date.loc[did_run_mask, 'run'] = '🏃'
+activities_by_date['run'] = activities_by_date['run'].fillna('❌')
+
+did_tokei_mask = (activities_by_date['tokei_count'] >= 1)
+activities_by_date.loc[did_tokei_mask, 'tokei'] = '🏋️'
+activities_by_date['tokei'] = activities_by_date['tokei'].fillna('❌')
+
+did_ride_mask = (activities_by_date['ride_count'] >= 1)
+activities_by_date.loc[did_ride_mask, 'ride'] = '🚴'
+activities_by_date['ride'] = activities_by_date['ride'].fillna('❌')
+
+# transpose the dataframe so time is along the columns
+activities_by_date = activities_by_date[['run', 'tokei', 'ride']].transpose()
+
+st.write(activities_by_date)
 
 # ----------------------------------------------------------------
 # ----------------------- DISTANCE -------------------------------

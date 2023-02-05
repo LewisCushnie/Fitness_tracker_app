@@ -189,6 +189,49 @@ def clean_and_enrich_strava_data(activities, current_date):
                                 ,'max_speed': 'max speed (m/s)'
                                 ,'elev_high': 'elev high (m)'
                                 ,'elev_low': 'elev low (m)'}, inplace = True)
+
+    # add emoji columns to dataframe
+    count_tokei_start = activities['start_location'].str.count("Tokei").sum()
+    count_tokei_end = activities['end_location'].str.count("Tokei").sum()
+
+    # select the gym count from the column with the highest count
+    if count_tokei_end > count_tokei_start:
+        selected_gym_column = 'end_location'
+
+    elif count_tokei_start > count_tokei_end:
+        selected_gym_column = 'start_location'
+
+    else:
+        # if equal, it doesnt matter which column is selected
+        selected_gym_column = 'start_location'
+
+    gym_mask = (activities[selected_gym_column] == 'Tokei Martial Arts')
+    ride_mask = (activities['type'] == 'Ride')
+    run_mask = (activities['type'] == 'Run')
+
+    # add columns to count runs
+    activities.loc[gym_mask, 'tokei_count'] = 1
+    activities['tokei_count'] = activities['tokei_count'].fillna(0)
+
+    # add columns to count runs
+    activities.loc[ride_mask, 'ride_count'] = 1
+    activities['ride_count'] = activities['ride_count'].fillna(0)
+
+    # add columns to count runs
+    activities.loc[run_mask, 'run_count'] = 1
+    activities['run_count'] = activities['run_count'].fillna(0)
+
+    # add columns to count runs
+    activities.loc[run_mask, 'run'] = '🏃'
+    activities['run'] = activities['run'].fillna('❌')
+
+    # add columns to count gym
+    activities.loc[gym_mask, 'tokei'] = '🏋️'
+    activities['tokei'] = activities['tokei'].fillna('❌')
+
+    # add columns to count cycle
+    activities.loc[ride_mask, 'ride'] = '🚴'
+    activities['ride'] = activities['ride'].fillna('❌')
     
     return activities
 
