@@ -26,15 +26,17 @@ with open("streamlit_utils/style.css") as f:
     st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
 tfile = tempfile.NamedTemporaryFile(mode="w+")
-st.write(f'{tfile.name}.json')
+temp_cred_file_path = f'{tfile.name}.json'
+st.write(temp_cred_file_path)
+
+# create file from google sheets credentials to authorise with
+config = gdb._google_creds_as_file()
+
+with open(temp_cred_file_path, 'a') as cred:
+    json.dump(config, cred)
 
 # get current date
 current_date = date.today()
-
-# create file from google sheets credentials to authorise with
-creds_file = gdb._google_creds_as_file()
-
-st.write(creds_file)
 
 st.title('Fitness Stats 🏃 🏋️ 🚴')
 st.info("You can't improve what you can't measure...")
@@ -88,7 +90,7 @@ with tab1:
                 st.success("Submitted!")
 
                 # update the google sheets database with form input
-                gdb.update_google_sheets_db(row_to_add, current_date, creds_file)
+                gdb.update_google_sheets_db(row_to_add, current_date, temp_cred_file_path)
             
             else:
                 pass
@@ -211,7 +213,7 @@ with tab3:
     st.header('Physical Tracking')
 
     # read data from the google sheets 'database'
-    google_sheets_df = gdb.read_google_sheets_db(creds_file)
+    google_sheets_df = gdb.read_google_sheets_db(temp_cred_file_path)
 
     # convert "" cells to NaN
     google_sheets_df = google_sheets_df.mask(google_sheets_df == '')
