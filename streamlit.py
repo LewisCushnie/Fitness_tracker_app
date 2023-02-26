@@ -29,6 +29,8 @@ current_date = date.today()
 # create file from google sheets credentials to authorise with
 creds_file = gdb._google_creds_as_file()
 
+st.write(creds_file)
+
 st.title('Fitness Stats 🏃 🏋️ 🚴')
 st.info("You can't improve what you can't measure...")
 
