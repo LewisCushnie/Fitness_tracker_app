@@ -30,7 +30,7 @@ temp_cred_file_path = f'{tfile.name}.json'
 st.write(temp_cred_file_path)
 
 # create file from google sheets credentials to authorise with
-config = gdb._google_creds_as_file()
+config, private_key = gdb._google_creds_as_file()
 
 with open(temp_cred_file_path, 'a') as cred:
     json.dump(config, cred)
@@ -41,6 +41,7 @@ f = open(temp_cred_file_path)
 # a dictionary
 data = json.load(f)
 
+st.write(private_key)
 st.write(data)
 
 # get current date
