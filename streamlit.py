@@ -26,6 +26,7 @@ with open("streamlit_utils/style.css") as f:
     st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
 tfile = tempfile.NamedTemporaryFile(mode="w+")
+st.write(type(tfile))
 temp_cred_file_path = f'{tfile.name}.json'
 st.write(temp_cred_file_path)
 
