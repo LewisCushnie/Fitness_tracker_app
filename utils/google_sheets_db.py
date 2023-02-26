@@ -19,6 +19,8 @@ def _google_creds_as_file():
     auth_provider_x509_cert_url = st.secrets["auth_provider_x509_cert_url"]
     client_x509_cert_url = st.secrets["client_x509_cert_url"]
 
+
+
     # temp = tempfile.NamedTemporaryFile()
     # temp.write(json.dumps({
     #     "type": _type,
@@ -46,7 +48,7 @@ def _google_creds_as_file():
     #     "auth_provider_x509_cert_url": auth_provider_x509_cert_url,
     #     "client_x509_cert_url": client_x509_cert_url
     # }
-    config = f'''{{
+    config = fr'''{{
         "type": "{_type}",
         "project_id": "{project_id}",
         "private_key_id": "{private_key_id}",
