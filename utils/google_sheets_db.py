@@ -19,8 +19,22 @@ def _google_creds_as_file():
     auth_provider_x509_cert_url = st.secrets["auth_provider_x509_cert_url"]
     client_x509_cert_url = st.secrets["client_x509_cert_url"]
 
-    temp = tempfile.NamedTemporaryFile()
-    temp.write(json.dumps({
+    # temp = tempfile.NamedTemporaryFile()
+    # temp.write(json.dumps({
+    #     "type": _type,
+    #     "project_id": project_id,
+    #     "private_key_id": private_key_id,
+    #     "private_key": private_key,
+    #     "client_email": client_email,
+    #     "client_id": client_id,
+    #     "auth_uri": auth_uri,
+    #     "token_uri": token_uri,
+    #     "auth_provider_x509_cert_url": auth_provider_x509_cert_url,
+    #     "client_x509_cert_url": client_x509_cert_url
+    # }))
+    # temp.flush()
+
+    config = {
         "type": _type,
         "project_id": project_id,
         "private_key_id": private_key_id,
@@ -31,10 +45,15 @@ def _google_creds_as_file():
         "token_uri": token_uri,
         "auth_provider_x509_cert_url": auth_provider_x509_cert_url,
         "client_x509_cert_url": client_x509_cert_url
-    }))
-    temp.flush().encode('utf-8')
+    }
+    tfile = tempfile.NamedTemporaryFile(mode="w+")
+    json.dump(config, tfile)
+    tfile.flush()
+    print(tfile.name)
     
-    return temp
+    # .encode('utf-8')
+    
+    return tfile
 
 def read_google_sheets_db(creds_file):
     # https://medium.com/game-of-data/play-with-google-spreadsheets-with-python-301dd4ee36eb
