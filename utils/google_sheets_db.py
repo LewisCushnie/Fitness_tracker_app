@@ -5,20 +5,19 @@ import streamlit as st
 import tempfile
 import json
 
-def _google_creds_as_file(_type
-                          ,project_id
-                          ,private_key_id
-                          ,private_key
-                          ,client_email
-                          ,client_id
-                          ,auth_uri
-                          ,token_uri
-                          ,auth_provider_x509_cert_url
-                          ,client_x509_cert_url):
+def _google_creds_as_file():
 
-    '''
-
-    '''
+    # get all secrets from streamlit
+    _type = st.secrets["_type"]
+    project_id = st.secrets["project_id"]
+    private_key_id = st.secrets["private_key_id"]
+    private_key = st.secrets["private_key"]
+    client_email = st.secrets["client_email"]
+    client_id = st.secrets["client_id"]
+    auth_uri = st.secrets["auth_uri"]
+    token_uri = st.secrets["token_uri"]
+    auth_provider_x509_cert_url = st.secrets["auth_provider_x509_cert_url"]
+    client_x509_cert_url = st.secrets["client_x509_cert_url"]
 
     temp = tempfile.NamedTemporaryFile()
     temp.write(json.dumps({
@@ -33,7 +32,8 @@ def _google_creds_as_file(_type
         "auth_provider_x509_cert_url": auth_provider_x509_cert_url,
         "client_x509_cert_url": client_x509_cert_url
     }))
-    temp.flush()
+    temp.flush().encode('utf-8')
+    
     return temp
 
 def read_google_sheets_db(creds_file):
@@ -53,7 +53,6 @@ def read_google_sheets_db(creds_file):
     google_sheets_df = wks.get_as_df()
 
     return google_sheets_df
-
 
 def update_google_sheets_db(row_to_add, date_choice, creds_file):
     # https://medium.com/game-of-data/play-with-google-spreadsheets-with-python-301dd4ee36eb
