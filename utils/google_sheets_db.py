@@ -34,7 +34,7 @@ def _google_creds_as_file():
     # }))
     # temp.flush()
 
-    config = {
+    config = '''{
         "type": _type,
         "project_id": project_id,
         "private_key_id": private_key_id,
@@ -45,7 +45,7 @@ def _google_creds_as_file():
         "token_uri": token_uri,
         "auth_provider_x509_cert_url": auth_provider_x509_cert_url,
         "client_x509_cert_url": client_x509_cert_url
-    }
+    }'''
     tfile = tempfile.NamedTemporaryFile(mode="w+")
     json.dump(config, tfile)
     # a = a.encode('utf-8')
