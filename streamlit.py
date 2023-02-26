@@ -35,6 +35,14 @@ config = gdb._google_creds_as_file()
 with open(temp_cred_file_path, 'a') as cred:
     json.dump(config, cred)
 
+f = open(temp_cred_file_path)
+  
+# returns JSON object as 
+# a dictionary
+data = json.load(f)
+
+st.write(data)
+
 # get current date
 current_date = date.today()
 
