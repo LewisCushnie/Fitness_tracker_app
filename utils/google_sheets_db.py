@@ -63,7 +63,7 @@ def read_google_sheets_db(creds_file):
 
     # gc = pygsheets.authorize(service_file='original-folio-378909-f6478f27617b.json')
     # gc = pygsheets.authorize(service_file= creds_file)
-    gc = pygsheets.authorize(service_account_env_var= creds_file)
+    gc = pygsheets.authorize(service_account_json= creds_file)
 
     #open the google spreadsheet (where 'PY to Gsheet Test' is the name of my sheet)
     sh = gc.open('Fitness_App_db')
@@ -82,7 +82,7 @@ def update_google_sheets_db(row_to_add, date_choice, creds_file):
 
     # gc = pygsheets.authorize(service_file='original-folio-378909-f6478f27617b.json')
     # gc = pygsheets.authorize(service_file= creds_file)
-    gc = pygsheets.authorize(service_account_env_var= creds_file)
+    gc = pygsheets.authorize(service_account_json= creds_file)
 
     #open the google spreadsheet (where 'PY to Gsheet Test' is the name of my sheet)
     sh = gc.open('Fitness_App_db')
