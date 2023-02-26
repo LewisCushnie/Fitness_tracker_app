@@ -6,6 +6,8 @@ import numpy as np
 import altair as alt
 from datetime import datetime, timedelta, date
 import sqlite3
+import tempfile
+import json
 
 st.set_page_config(
     page_title="Fitness Tracker App",
@@ -22,6 +24,9 @@ st.set_page_config(
 # Apply formatting to page
 with open("streamlit_utils/style.css") as f:
     st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+
+tfile = tempfile.NamedTemporaryFile(mode="w+")
+st.write(tfile.name)
 
 # get current date
 current_date = date.today()
