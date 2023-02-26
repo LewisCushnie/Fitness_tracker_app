@@ -47,15 +47,15 @@ def _google_creds_as_file():
     #     "client_x509_cert_url": client_x509_cert_url
     # }
     config = f'''{{
-        "type": "{_type}",\
-        "project_id": "{project_id}",\
-        "private_key_id": "{private_key_id}",\
-        "private_key": "{private_key}",\
-        "client_email": "{client_email}",\
-        "client_id": "{client_id}",\
-        "auth_uri": "{auth_uri}",\
-        "token_uri": "{token_uri}",\
-        "auth_provider_x509_cert_url": "{auth_provider_x509_cert_url}",\
+        "type": "{_type}",
+        "project_id": "{project_id}",
+        "private_key_id": "{private_key_id}",
+        "private_key": "{private_key}",
+        "client_email": "{client_email}",
+        "client_id": "{client_id}",
+        "auth_uri": "{auth_uri}",
+        "token_uri": "{token_uri}",
+        "auth_provider_x509_cert_url": "{auth_provider_x509_cert_url}",
         "client_x509_cert_url": "{client_x509_cert_url}"
     }}'''
 
@@ -76,7 +76,7 @@ def read_google_sheets_db(creds_file):
 
     # gc = pygsheets.authorize(service_file='original-folio-378909-f6478f27617b.json')
     # gc = pygsheets.authorize(service_file= creds_file)
-    gc = pygsheets.authorize(service_account_json= creds_file)
+    gc = pygsheets.authorize(client_secret='client_secret.json', service_account_json= creds_file)
 
     #open the google spreadsheet (where 'PY to Gsheet Test' is the name of my sheet)
     sh = gc.open('Fitness_App_db')
@@ -95,7 +95,7 @@ def update_google_sheets_db(row_to_add, date_choice, creds_file):
 
     # gc = pygsheets.authorize(service_file='original-folio-378909-f6478f27617b.json')
     # gc = pygsheets.authorize(service_file= creds_file)
-    gc = pygsheets.authorize(service_account_json= creds_file)
+    gc = pygsheets.authorize(client_secret='client_secret.json', service_account_json= creds_file)
 
     #open the google spreadsheet (where 'PY to Gsheet Test' is the name of my sheet)
     sh = gc.open('Fitness_App_db')
