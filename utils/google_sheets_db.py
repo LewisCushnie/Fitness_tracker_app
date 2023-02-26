@@ -47,8 +47,8 @@ def _google_creds_as_file():
         "client_x509_cert_url": client_x509_cert_url
     }
     tfile = tempfile.NamedTemporaryFile(mode="w+")
-    a = json.dump(config, tfile)
-    a = a.encode('utf-8')
+    json.dump(config, tfile)
+    # a = a.encode('utf-8')
     tfile.flush()
     print(tfile.name)
     
