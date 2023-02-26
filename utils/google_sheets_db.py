@@ -2,11 +2,46 @@ import pygsheets
 from datetime import date
 import pandas as pd
 import streamlit as st
+import tempfile
+import json
 
-def read_google_sheets_db():
+def _google_creds_as_file(_type
+                          ,project_id
+                          ,private_key_id
+                          ,private_key
+                          ,client_email
+                          ,client_id
+                          ,auth_uri
+                          ,token_uri
+                          ,auth_provider_x509_cert_url
+                          ,client_x509_cert_url):
+
+    '''
+
+    '''
+
+    temp = tempfile.NamedTemporaryFile()
+    temp.write(json.dumps({
+        "type": _type,
+        "project_id": project_id,
+        "private_key_id": private_key_id,
+        "private_key": private_key,
+        "client_email": client_email,
+        "client_id": client_id,
+        "auth_uri": auth_uri,
+        "token_uri": token_uri,
+        "auth_provider_x509_cert_url": auth_provider_x509_cert_url,
+        "client_x509_cert_url": client_x509_cert_url
+    }))
+    temp.flush()
+    return temp
+
+def read_google_sheets_db(creds_file):
     # https://medium.com/game-of-data/play-with-google-spreadsheets-with-python-301dd4ee36eb
     #authorization
-    gc = pygsheets.authorize(service_file='original-folio-378909-f6478f27617b.json')
+
+    # gc = pygsheets.authorize(service_file='original-folio-378909-f6478f27617b.json')
+    gc = pygsheets.authorize(service_file= creds_file)
 
     #open the google spreadsheet (where 'PY to Gsheet Test' is the name of my sheet)
     sh = gc.open('Fitness_App_db')
@@ -20,10 +55,12 @@ def read_google_sheets_db():
     return google_sheets_df
 
 
-def update_google_sheets_db(row_to_add, date_choice):
+def update_google_sheets_db(row_to_add, date_choice, creds_file):
     # https://medium.com/game-of-data/play-with-google-spreadsheets-with-python-301dd4ee36eb
     #authorization
-    gc = pygsheets.authorize(service_file='original-folio-378909-f6478f27617b.json')
+
+    # gc = pygsheets.authorize(service_file='original-folio-378909-f6478f27617b.json')
+    gc = pygsheets.authorize(service_file= creds_file)
 
     #open the google spreadsheet (where 'PY to Gsheet Test' is the name of my sheet)
     sh = gc.open('Fitness_App_db')

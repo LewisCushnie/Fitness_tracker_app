@@ -26,6 +26,30 @@ with open("streamlit_utils/style.css") as f:
 # get current date
 current_date = date.today()
 
+# get all secrets from streamlit
+_type = st.secrets["_type"]
+project_id = st.secrets["project_id"]
+private_key_id = st.secrets["private_key_id"]
+private_key = st.secrets["private_key"]
+client_email = st.secrets["client_email"]
+client_id = st.secrets["client_id"]
+auth_uri = st.secrets["auth_uri"]
+token_uri = st.secrets["token_uri"]
+auth_provider_x509_cert_url = st.secrets["auth_provider_x509_cert_url"]
+client_x509_cert_url = st.secrets["client_x509_cert_url"]
+
+# create file from google sheets credentials to authorise with
+creds_file = gdb._google_creds_as_file(_type
+                          ,project_id
+                          ,private_key_id
+                          ,private_key
+                          ,client_email
+                          ,client_id
+                          ,auth_uri
+                          ,token_uri
+                          ,auth_provider_x509_cert_url
+                          ,client_x509_cert_url)
+
 st.title('Fitness Stats 🏃 🏋️ 🚴')
 st.info("You can't improve what you can't measure...")
 
@@ -78,7 +102,7 @@ with tab1:
                 st.success("Submitted!")
 
                 # update the google sheets database with form input
-                gdb.update_google_sheets_db(row_to_add, current_date)
+                gdb.update_google_sheets_db(row_to_add, current_date, creds_file)
             
             else:
                 pass
@@ -197,11 +221,11 @@ with tab3:
     # ----------------------------------------------------------------
     # ------------------- WEIGHT TRACKING ----------------------------
     # ----------------------------------------------------------------
-    
+
     st.header('Physical Tracking')
 
     # read data from the google sheets 'database'
-    google_sheets_df = gdb.read_google_sheets_db()
+    google_sheets_df = gdb.read_google_sheets_db(creds_file)
 
     # convert "" cells to NaN
     google_sheets_df = google_sheets_df.mask(google_sheets_df == '')
