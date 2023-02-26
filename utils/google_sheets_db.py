@@ -46,7 +46,7 @@ def _google_creds_as_file():
     #     "auth_provider_x509_cert_url": auth_provider_x509_cert_url,
     #     "client_x509_cert_url": client_x509_cert_url
     # }
-    config = f'''{
+    config = f'''{{
         "type": {_type},
         "project_id": {project_id},
         "private_key_id": {private_key_id},
@@ -57,7 +57,7 @@ def _google_creds_as_file():
         "token_uri": {token_uri},
         "auth_provider_x509_cert_url": {auth_provider_x509_cert_url},
         "client_x509_cert_url": {client_x509_cert_url}
-    }'''
+    }}'''
 
     tfile = tempfile.NamedTemporaryFile(mode="w+")
     json.dump(config, tfile)
