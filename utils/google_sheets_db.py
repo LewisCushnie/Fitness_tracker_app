@@ -63,7 +63,7 @@ def _google_creds_as_file():
     json.dump(config, tfile)
     # a = a.encode('utf-8')
     tfile.flush()
-    print(tfile.name)
+    config = tfile.name
     
     # .encode('utf-8')
     

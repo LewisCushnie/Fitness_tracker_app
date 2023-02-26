@@ -7,14 +7,6 @@ import altair as alt
 from datetime import datetime, timedelta, date
 import sqlite3
 
-import json,tempfile
-config = {"A":[1,2], "B":"Super"}
-tfile = tempfile.NamedTemporaryFile(mode="w+")
-json.dump(config, tfile)
-tfile.flush()
-st.write(tfile.name)
-
-
 st.set_page_config(
     page_title="Fitness Tracker App",
     page_icon="🧊",
