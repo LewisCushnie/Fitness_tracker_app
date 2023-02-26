@@ -60,7 +60,11 @@ def _google_creds_as_file():
     }}'''
 
     tfile = tempfile.NamedTemporaryFile(mode="w+")
-    config = json.dumps(config, tfile)
+
+    with open(tfile.name, 'a') as cred:
+        json.dump(config, cred)
+
+    # config = json.dumps(config, tfile)
     # a = a.encode('utf-8')
     # tfile.flush()
     # config = tfile.name
