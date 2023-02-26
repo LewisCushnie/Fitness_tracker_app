@@ -232,6 +232,9 @@ def clean_and_enrich_strava_data(activities, current_date):
     # add columns to count cycle
     activities.loc[ride_mask, 'ride'] = '🚴'
     activities['ride'] = activities['ride'].fillna('❌')
+
+    # add cumulative distance column
+    activities['cumulative_distance'] = activities['distance (km)'].cumsum()
     
     return activities
 
