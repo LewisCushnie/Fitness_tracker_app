@@ -12,7 +12,7 @@ config = {"A":[1,2], "B":"Super"}
 tfile = tempfile.NamedTemporaryFile(mode="w+")
 json.dump(config, tfile)
 tfile.flush()
-print(tfile.name)
+st.write(tfile.name)
 
 
 st.set_page_config(
