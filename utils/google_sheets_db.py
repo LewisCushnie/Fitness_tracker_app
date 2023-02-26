@@ -54,7 +54,8 @@ def _google_creds_as_file():
     
     # .encode('utf-8')
     
-    return tfile
+    # return tfile
+    return config
 
 def read_google_sheets_db(creds_file):
     # https://medium.com/game-of-data/play-with-google-spreadsheets-with-python-301dd4ee36eb
