@@ -26,7 +26,7 @@ with open("streamlit_utils/style.css") as f:
     st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
 tfile = tempfile.NamedTemporaryFile(mode="w+")
-st.write(tfile.name)
+st.write(f'{tfile.name}.json')
 
 # get current date
 current_date = date.today()
