@@ -42,9 +42,6 @@ f = open(temp_cred_file_path)
 # a dictionary
 data = json.load(f)
 
-st.write(private_key)
-st.write(data)
-
 # get current date
 current_date = date.today()
 
