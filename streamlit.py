@@ -26,10 +26,10 @@ st.set_page_config(
 with open("streamlit_utils/style.css") as f:
     st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
-tfile = tempfile.NamedTemporaryFile(mode="w+")
-st.write(type(tfile))
-temp_cred_file_path = f'{tfile.name}.json'
-st.write(temp_cred_file_path)
+# tfile = tempfile.NamedTemporaryFile(mode="w+")
+# st.write(type(tfile))
+# temp_cred_file_path = f'{tfile.name}.json'
+# st.write(temp_cred_file_path)
 
 # create file from google sheets credentials to authorise with
 # config, private_key = gdb._google_creds_as_file()
@@ -45,7 +45,7 @@ st.write(google_sheets_df)
   
 # returns JSON object as 
 # a dictionary
-data = json.load(f)
+# data = json.load(f)
 
 # get current date
 current_date = date.today()

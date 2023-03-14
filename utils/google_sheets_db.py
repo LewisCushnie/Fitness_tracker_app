@@ -26,19 +26,6 @@ def get_google_sheets_as_df():
     client_x509_cert_url = st.secrets["client_x509_cert_url"]
 
     # build the credentials dict using the streamlit secrets
-    my_credentials = fr'''{{
-        "type": "{_type}",
-        "project_id": "{project_id}",
-        "private_key_id": "{private_key_id}",
-        "private_key": "{private_key}",
-        "client_email": "{client_email}",
-        "client_id": "{client_id}",
-        "auth_uri": "{auth_uri}",
-        "token_uri": "{token_uri}",
-        "auth_provider_x509_cert_url": "{auth_provider_x509_cert_url}",
-        "client_x509_cert_url": "{client_x509_cert_url}"
-    }}'''
-
     my_credentials = {
     "type": _type,
     "project_id": project_id,
@@ -65,25 +52,6 @@ def get_google_sheets_as_df():
     google_sheets_df = pd.DataFrame(ws.get_all_records())
 
     return google_sheets_df
-
-# def read_google_sheets_db(creds_file):
-#     # https://medium.com/game-of-data/play-with-google-spreadsheets-with-python-301dd4ee36eb
-#     #authorization
-
-#     # gc = pygsheets.authorize(service_file='original-folio-378909-f6478f27617b.json')
-#     # gc = pygsheets.authorize(service_file= creds_file)
-#     gc = pygsheets.authorize(service_file= creds_file)
-
-#     #open the google spreadsheet (where 'PY to Gsheet Test' is the name of my sheet)
-#     sh = gc.open('Fitness_App_db')
-
-#     #select the first sheet 
-#     wks = sh[0]
-
-#     # output as df
-#     google_sheets_df = wks.get_as_df()
-
-#     return google_sheets_df
 
 def update_google_sheets_db(row_to_add, date_choice, creds_file):
     # https://medium.com/game-of-data/play-with-google-spreadsheets-with-python-301dd4ee36eb
