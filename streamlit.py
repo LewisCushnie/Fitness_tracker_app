@@ -8,6 +8,7 @@ from datetime import datetime, timedelta, date
 import sqlite3
 import tempfile
 import json
+import gspread
 
 st.set_page_config(
     page_title="Fitness Tracker App",
