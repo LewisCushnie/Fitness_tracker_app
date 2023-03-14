@@ -26,6 +26,14 @@ st.set_page_config(
 with open("streamlit_utils/style.css") as f:
     st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
+a = st.secrets["CLIENT_ID"]
+b = st.secrets["CLIENT_SECRET"]
+c = st.secrets["STRAVA_REFRESH_TOKEN"]
+
+st.write(a)
+st.write(b)
+st.write(c)
+
 # tfile = tempfile.NamedTemporaryFile(mode="w+")
 # st.write(type(tfile))
 # temp_cred_file_path = f'{tfile.name}.json'

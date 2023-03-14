@@ -15,6 +15,7 @@ def get_secrets():
 
         CLIENT_ID = os.getenv('CLIENT_ID')
         CLIENT_SECRET = os.getenv('CLIENT_SECRET')
+        STRAVA_REFRESH_TOKEN = os.getenv('STRAVA_REFRESH_TOKEN')
 
         logging.info(f'Environment variables successfully collected')
 
@@ -25,10 +26,11 @@ def get_secrets():
             print('get secrets from github secrets')
             CLIENT_ID = os.environ['CLIENT_ID']
             CLIENT_SECRET = os.environ['CLIENT_SECRET']
+            STRAVA_REFRESH_TOKEN = os.environ['STRAVA_REFRESH_TOKEN']
 
             logging.info(f'Environment variables successfully collected')
 
         except KeyError:
             logging.info(f'Could not collect environment variables')
 
-    return CLIENT_ID, CLIENT_SECRET
+    return CLIENT_ID, CLIENT_SECRET, STRAVA_REFRESH_TOKEN

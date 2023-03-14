@@ -12,7 +12,7 @@ from sklearn.neighbors import BallTree
 from sklearn.metrics import DistanceMetric
 from datetime import datetime, timedelta
 
-def get_strava_refresh_token(CLIENT_ID, CLIENT_SECRET):
+def get_strava_refresh_token(CLIENT_ID, CLIENT_SECRET, STRAVA_REFRESH_TOKEN):
 
     '''
     This function reads the strava access token from the json file
@@ -23,12 +23,11 @@ def get_strava_refresh_token(CLIENT_ID, CLIENT_SECRET):
     '''
 
     # Get the tokens from file to connect to Strava
-    with open('utils/access_tokens/strava_tokens.json') as json_file:
-        strava_tokens = json.load(json_file)
+    # with open('utils/access_tokens/strava_tokens.json') as json_file:
+    #     strava_tokens = json.load(json_file)
 
     # If access_token has expired then use the refresh_token to get the new access_token
-    if strava_tokens['expires_at'] < time.time():
-
+    if STRAVA_REFRESH_TOKEN < time.time():
         print('Generating refresh access token...')
 
     # Make Strava auth API call with current refresh token
@@ -38,19 +37,21 @@ def get_strava_refresh_token(CLIENT_ID, CLIENT_SECRET):
                                     'client_id': CLIENT_ID,
                                     'client_secret': CLIENT_SECRET,
                                     'grant_type': 'refresh_token',
-                                    'refresh_token': strava_tokens['refresh_token']
+                                    'refresh_token': STRAVA_REFRESH_TOKEN
                                     }
                         )
 
     # Save response as json in new variable
         new_strava_tokens = response.json()
 
-    # Save new tokens to file
-        with open('utils/access_tokens/strava_tokens.json', 'w') as outfile:
-            json.dump(new_strava_tokens, outfile)
+    # # Save new tokens to file
+    #     with open('utils/access_tokens/strava_tokens.json', 'w') as outfile:
+    #         json.dump(new_strava_tokens, outfile)
 
-    else:
-        print('Access token has not expired yet...')
+    # else:
+    #     print('Access token has not expired yet...')
+
+    return new_strava_tokens
 
 def get_strava_tokens(CLIENT_ID, CLIENT_SECRET, code, reset):
     '''
@@ -59,7 +60,7 @@ def get_strava_tokens(CLIENT_ID, CLIENT_SECRET, code, reset):
     '''
 
     # Make Strava auth API call with your 
-    #  client_code, client_secret and code
+    # client_code, client_secret and code
     if reset:
         response = requests.post(
                             url = 'https://www.strava.com/oauth/token',
