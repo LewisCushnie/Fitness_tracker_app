@@ -31,12 +31,16 @@ temp_cred_file_path = f'{tfile.name}.json'
 st.write(temp_cred_file_path)
 
 # create file from google sheets credentials to authorise with
-config, private_key = gdb._google_creds_as_file()
+# config, private_key = gdb._google_creds_as_file()
 
-with open(temp_cred_file_path, 'a') as cred:
-    json.dump(config, cred)
+# with open(temp_cred_file_path, 'a') as cred:
+#     json.dump(config, cred)
 
-f = open(temp_cred_file_path)
+# f = open(temp_cred_file_path)
+
+google_sheets_df = gdb.get_google_sheets_as_df()
+
+st.write(google_sheets_df)
   
 # returns JSON object as 
 # a dictionary

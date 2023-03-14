@@ -22,6 +22,7 @@ def main():
     print(CLIENT_SECRET)
 
     # get strava refresh token if old one has expired
+    
     # code = '9c50827de6bebd62df9698434515ff7b1667515a'
     # reset_state = False
     # dd.get_strava_tokens(CLIENT_ID, CLIENT_SECRET, code, reset_state)
