@@ -26,13 +26,11 @@ st.set_page_config(
 with open("streamlit_utils/style.css") as f:
     st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
-a = st.secrets["CLIENT_ID"]
-b = st.secrets["CLIENT_SECRET"]
-c = st.secrets["STRAVA_REFRESH_TOKEN"]
+CLIENT_ID = st.secrets["CLIENT_ID"]
+CLIENT_SECRET = st.secrets["CLIENT_SECRET"]
+STRAVA_REFRESH_TOKEN = st.secrets["STRAVA_REFRESH_TOKEN"]
 
-st.write(a)
-st.write(b)
-st.write(c)
+new_strava_tokens = dd.get_strava_refresh_token(CLIENT_ID, CLIENT_SECRET, STRAVA_REFRESH_TOKEN)
 
 # tfile = tempfile.NamedTemporaryFile(mode="w+")
 # st.write(type(tfile))
