@@ -99,7 +99,8 @@ with tab1:
 
             # Every form must have a submit button.
             submitted = st.form_submit_button("Submit")
-            row_to_add = [n_stretched
+            row_to_add = [current_date
+                        ,n_stretched
                         ,weight
                         ,w_pullup
                         ,r_pullup
