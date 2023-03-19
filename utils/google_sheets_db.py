@@ -46,42 +46,46 @@ def get_google_sheets_as_df():
     sh = gc.open('Fitness_App_db')
 
     # open the required worksheet in the google sheet
-    ws = sh.worksheet("Records")
+    worksheet = sh.worksheet("Records")
 
     # convert the worksheet to a pandas df
-    google_sheets_df = pd.DataFrame(ws.get_all_records())
+    google_sheets_df = pd.DataFrame(worksheet.get_all_records())
 
-    return google_sheets_df
+    return google_sheets_df, worksheet
 
-def update_google_sheets_db(row_to_add, date_choice, creds_file):
-    # https://medium.com/game-of-data/play-with-google-spreadsheets-with-python-301dd4ee36eb
-    #authorization
+def update_google_sheets_db_2(google_sheets_df, worksheet):
 
-    # gc = pygsheets.authorize(service_file='original-folio-378909-f6478f27617b.json')
-    # gc = pygsheets.authorize(service_file= creds_file)
-    # gc = pygsheets.authorize(service_file=creds_file)
+    worksheet.update([google_sheets_df.columns.values.tolist()] + google_sheets_df.values.tolist())
+    
+# def update_google_sheets_db(row_to_add, date_choice, creds_file):
+#     # https://medium.com/game-of-data/play-with-google-spreadsheets-with-python-301dd4ee36eb
+#     #authorization
 
-    #open the google spreadsheet (where 'PY to Gsheet Test' is the name of my sheet)
-    sh = gc.open('Fitness_App_db')
+#     # gc = pygsheets.authorize(service_file='original-folio-378909-f6478f27617b.json')
+#     # gc = pygsheets.authorize(service_file= creds_file)
+#     # gc = pygsheets.authorize(service_file=creds_file)
 
-    #select the first sheet
-    wks = sh[0]
+#     #open the google spreadsheet (where 'PY to Gsheet Test' is the name of my sheet)
+#     sh = gc.open('Fitness_App_db')
 
-    # create dataframe from sheet
-    df = wks.get_as_df()
+#     #select the first sheet
+#     wks = sh[0]
 
-    # convert date column to date
-    df['Date'] = pd.to_datetime(df['Date'])
-    df['Date'] = df['Date'].dt.date
+#     # create dataframe from sheet
+#     df = wks.get_as_df()
 
-    # find index of current date in dataframe
-    df_row = df.index[df['Date'] == date_choice][0]
+#     # convert date column to date
+#     df['Date'] = pd.to_datetime(df['Date'])
+#     df['Date'] = df['Date'].dt.date
 
-    # add 2 because of index starting from 0 in pandas, and headings row
-    wks_row = df_row + 2
+#     # find index of current date in dataframe
+#     df_row = df.index[df['Date'] == date_choice][0]
 
-    # weight cell to change
-    weight_cell = f'B{wks_row}'
+#     # add 2 because of index starting from 0 in pandas, and headings row
+#     wks_row = df_row + 2
 
-    # update the row for the current date with the inputted values
-    wks.update_row(wks_row, row_to_add, col_offset= 1)
+#     # weight cell to change
+#     weight_cell = f'B{wks_row}'
+
+#     # update the row for the current date with the inputted values
+#     wks.update_row(wks_row, row_to_add, col_offset= 1)

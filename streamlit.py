@@ -65,6 +65,9 @@ st.info("You can't improve what you can't measure...")
 # get strava data from the api
 activities = dd.get_strava_data_2(current_date, strava_tokens)
 
+# read data from the google sheets 'database'
+google_sheets_df = gdb.get_google_sheets_as_df()
+
 # get maps locations
 maps_data = dd.get_key_locations()
 
@@ -104,10 +107,24 @@ with tab1:
                         ,r_bench]
             
             if submitted:
-                st.success("Submitted!")
 
-                # update the google sheets database with form input
-                gdb.update_google_sheets_db(row_to_add, current_date, temp_cred_file_path)
+                # convert date column to date
+                google_sheets_df['Date'] = pd.to_datetime(google_sheets_df['Date'])
+                google_sheets_df['Date'] = google_sheets_df['Date'].dt.date
+
+                # find index of current date in dataframe
+                df_row = google_sheets_df.index[google_sheets_df['Date'] == current_date][0]
+
+                # add 2 because of index starting from 0 in pandas, and headings row
+                wks_row = df_row + 2
+
+                st.write(wks_row)
+
+                # google_sheets_df_row_added = google_sheets_df.loc[]
+
+                # # update the google sheets database with form input
+                # gdb.update_google_sheets_db(row_to_add, current_date, temp_cred_file_path)
+                st.success("Submitted!")
             
             else:
                 pass
@@ -229,11 +246,6 @@ with tab3:
 
     st.header('Physical Tracking')
 
-    # read data from the google sheets 'database'
-    # google_sheets_df = gdb.read_google_sheets_db(temp_cred_file_path)
-    google_sheets_df = gdb.get_google_sheets_as_df()
-    # st.write(google_sheets_df)
-
     # convert "" cells to NaN
     google_sheets_df = google_sheets_df.mask(google_sheets_df == '')
 
@@ -276,6 +288,3 @@ with tab3:
         st.metric('Current mass (kg)'
                 ,current_mass
                 ,f'{perc_diff}%')
-
-    st.info('''THE FINAL STEP IS THAT I NEED TO AUTOMATE THE MAIN.PY TO AUTO-UPLOAD
-    VIA GITHUB ACTIONS''')
