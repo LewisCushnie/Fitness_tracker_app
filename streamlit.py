@@ -46,9 +46,6 @@ strava_tokens = dd.get_strava_refresh_token(CLIENT_ID, CLIENT_SECRET, STRAVA_REF
 #     json.dump(config, cred)
 
 # f = open(temp_cred_file_path)
-
-google_sheets_df = gdb.get_google_sheets_as_df()
-st.write(google_sheets_df)
   
 # returns JSON object as 
 # a dictionary
@@ -233,7 +230,9 @@ with tab3:
     st.header('Physical Tracking')
 
     # read data from the google sheets 'database'
-    google_sheets_df = gdb.read_google_sheets_db(temp_cred_file_path)
+    # google_sheets_df = gdb.read_google_sheets_db(temp_cred_file_path)
+    google_sheets_df = gdb.get_google_sheets_as_df()
+    # st.write(google_sheets_df)
 
     # convert "" cells to NaN
     google_sheets_df = google_sheets_df.mask(google_sheets_df == '')
