@@ -246,6 +246,8 @@ with tab3:
 
     st.header('Physical Tracking')
 
+    st.write(google_sheets_df)
+
     # convert "" cells to NaN
     google_sheets_df = google_sheets_df.mask(google_sheets_df == '')
 
