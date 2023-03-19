@@ -118,14 +118,12 @@ with tab1:
                 df_row = google_sheets_df_row_add.index[google_sheets_df_row_add['Date'] == current_date][0]
 
                 # add data from the form submission to the dataframe
-                google_sheets_df.iloc[df_row] = row_to_add
+                google_sheets_df_row_add.iloc[df_row] = row_to_add
 
-                st.write([google_sheets_df.columns.values.tolist()] + google_sheets_df.values.tolist())
+                google_sheets_df_row_add['Date'] = pd.to_datetime(google_sheets_df_row_add['Date'])
+                google_sheets_df_row_add['Date'] = google_sheets_df_row_add['Date'].dt.strftime('%Y-%m-%d')
 
-                google_sheets_df['Date'] = pd.to_datetime(google_sheets_df['Date'])
-                google_sheets_df['Date'] = google_sheets_df['Date'].dt.strftime('%Y-%m-%d')
-
-                st.write(google_sheets_df)
+                st.write(google_sheets_df_row_add)
 
                 # worksheet.update([google_sheets_df.columns.values.tolist()] + google_sheets_df.values.tolist())
 
