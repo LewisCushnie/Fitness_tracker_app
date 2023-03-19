@@ -120,7 +120,7 @@ with tab1:
                 wks_row = df_row + 2
 
                 # add data from the form submission to the dataframe
-                st.write(google_sheets_df_row_add.iloc[wks_row])
+                st.write(google_sheets_df_row_add.iloc[df_row])
 
                 st.write(wks_row)
 
