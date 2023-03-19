@@ -149,6 +149,7 @@ def clean_and_enrich_strava_data(activities, current_date):
 
     # convert distance from m -> km
     activities['distance'] = activities['distance'].div(1000)
+    
     # convert time from s -> min
     activities['moving_time'] = activities['moving_time'].div(60)
     activities['elapsed_time'] = activities['elapsed_time'].div(60)
@@ -227,13 +228,26 @@ def clean_and_enrich_strava_data(activities, current_date):
     activities.loc[ride_mask, 'ride'] = '🚴'
     activities['ride'] = activities['ride'].fillna('❌')
 
-    # add cumulative distance column
-    activities['cumulative_distance'] = activities['distance (km)'].cumsum()
+    # add distance riden column
+    mask = activities['type'] == 'Ride'
+    activities['distance riden (km)'] = activities['distance (km)'].loc[mask]
+    activities['distance riden (km)'] = activities['distance riden (km)'].fillna(0)
+
+    # add distance run column
+    mask = activities['type'] == 'Run'
+    activities['distance run (km)'] = activities['distance (km)'].loc[mask]
+    activities['distance run (km)'] = activities['distance run (km)'].fillna(0)
+
+    # add cumulative distance riden column
+    activities['cumulative distance riden (km)'] = activities['distance riden (km)'].cumsum()    
+
+    # add cumulative distance run column
+    activities['cumulative distance run (km)'] = activities['distance run (km)'].cumsum()
     
     return activities
 
 @st.cache_data
-def get_strava_data_2(current_date, strava_tokens):
+def get_strava_data(current_date, strava_tokens):
 
     '''
     This function scrapes wikipedia to return a list of S&P 500 tickers
@@ -297,8 +311,5 @@ def get_strava_data_2(current_date, strava_tokens):
 
         # increment page
         page += 1
-
-    # apply cleaning and transforms to df
-    activities = clean_and_enrich_strava_data(activities, current_date)
 
     return activities
