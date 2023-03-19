@@ -110,7 +110,7 @@ with tab1:
             if submitted:
 
                 # convert date column to date
-                google_sheets_df_row_add = google_sheets_df
+                google_sheets_df_row_add = google_sheets_df.copy()
                 google_sheets_df_row_add['Date'] = pd.to_datetime(google_sheets_df_row_add['Date'])
                 google_sheets_df_row_add['Date'] = google_sheets_df_row_add['Date'].dt.date
 
