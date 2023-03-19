@@ -122,7 +122,7 @@ with tab1:
 
                 st.write([google_sheets_df.columns.values.tolist()] + google_sheets_df.values.tolist())
 
-                google_sheets_df['Date'] = google_sheets_df['Date'].to_datetime()
+                google_sheets_df['Date'] = pd.to_datetime(google_sheets_df['Date'])
                 google_sheets_df['Date'] = google_sheets_df['Date'].dt.strftime('%Y-%m-%d')
 
                 st.write(google_sheets_df)
