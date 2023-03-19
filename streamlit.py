@@ -120,7 +120,9 @@ with tab1:
                 # add data from the form submission to the dataframe
                 google_sheets_df.iloc[df_row] = row_to_add
 
-                worksheet.update([google_sheets_df.columns.values.tolist()] + google_sheets_df.values.tolist())
+                st.write([google_sheets_df.columns.values.tolist()] + google_sheets_df.values.tolist())
+
+                # worksheet.update([google_sheets_df.columns.values.tolist()] + google_sheets_df.values.tolist())
 
                 # # update the google sheets database with new dataframe
                 # gdb.update_google_sheets_db_2(google_sheets_df, worksheet)
