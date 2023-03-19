@@ -117,14 +117,13 @@ with tab1:
                 # find index of current date in dataframe
                 df_row = google_sheets_df_row_add.index[google_sheets_df_row_add['Date'] == current_date][0]
 
-                # add 2 because of index starting from 0 in pandas, and headings row
-                wks_row = df_row + 2
-
                 # add data from the form submission to the dataframe
                 google_sheets_df.iloc[df_row] = row_to_add
 
-                # update the google sheets database with new dataframe
-                gdb.update_google_sheets_db_2(google_sheets_df, worksheet)
+                worksheet.update([google_sheets_df.columns.values.tolist()] + google_sheets_df.values.tolist())
+
+                # # update the google sheets database with new dataframe
+                # gdb.update_google_sheets_db_2(google_sheets_df, worksheet)
 
                 st.success("Submitted!")
             
