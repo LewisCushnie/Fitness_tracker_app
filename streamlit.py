@@ -5,9 +5,6 @@ import pandas as pd
 import numpy as np
 import altair as alt
 from datetime import datetime, timedelta, date
-import sqlite3
-import tempfile
-import json
 import gspread
 
 # set page config options
