@@ -119,6 +119,9 @@ with tab1:
                 # add 2 because of index starting from 0 in pandas, and headings row
                 wks_row = df_row + 2
 
+                # add data from the form submission to the dataframe
+                st.write(google_sheets_df_row_add.iloc[wks_row])
+
                 st.write(wks_row)
 
                 # google_sheets_df_row_added = google_sheets_df.loc[]
