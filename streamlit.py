@@ -121,10 +121,10 @@ with tab1:
                 wks_row = df_row + 2
 
                 # add data from the form submission to the dataframe
-                google_sheets_df_row_add.iloc[df_row] = row_to_add
+                google_sheets_df.iloc[df_row] = row_to_add
 
                 # update the google sheets database with new dataframe
-                gdb.update_google_sheets_db_2(google_sheets_df_row_add, worksheet)
+                gdb.update_google_sheets_db_2(google_sheets_df, worksheet)
 
                 st.success("Submitted!")
             
