@@ -66,7 +66,7 @@ st.info("You can't improve what you can't measure...")
 activities = dd.get_strava_data_2(current_date, strava_tokens)
 
 # read data from the google sheets 'database'
-google_sheets_df = gdb.get_google_sheets_as_df()
+google_sheets_df, worksheet = gdb.get_google_sheets_as_df()
 
 # get maps locations
 maps_data = dd.get_key_locations()
