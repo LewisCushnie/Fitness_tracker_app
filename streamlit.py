@@ -125,7 +125,7 @@ with tab1:
 
                 st.write(google_sheets_df_row_add)
 
-                # worksheet.update([google_sheets_df.columns.values.tolist()] + google_sheets_df.values.tolist())
+                worksheet.update([google_sheets_df_row_add.columns.values.tolist()] + google_sheets_df_row_add.values.tolist())
 
                 # # update the google sheets database with new dataframe
                 # gdb.update_google_sheets_db_2(google_sheets_df, worksheet)
