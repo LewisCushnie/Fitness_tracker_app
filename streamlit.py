@@ -10,6 +10,7 @@ import tempfile
 import json
 import gspread
 
+# set page config options
 st.set_page_config(
     page_title="Fitness Tracker App",
     page_icon="🧊",
@@ -26,13 +27,12 @@ st.set_page_config(
 with open("streamlit_utils/style.css") as f:
     st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
+# get strava api information from secrets to refresh strava data
 CLIENT_ID = st.secrets["CLIENT_ID"]
 CLIENT_SECRET = st.secrets["CLIENT_SECRET"]
 STRAVA_REFRESH_TOKEN = st.secrets["STRAVA_REFRESH_TOKEN"]
 
 strava_tokens = dd.get_strava_refresh_token(CLIENT_ID, CLIENT_SECRET, STRAVA_REFRESH_TOKEN)
-
-st.write(strava_tokens)
 
 # tfile = tempfile.NamedTemporaryFile(mode="w+")
 # st.write(type(tfile))
