@@ -123,12 +123,9 @@ with tab1:
                 # add data from the form submission to the dataframe
                 google_sheets_df_row_add.iloc[df_row] = row_to_add
 
-                st.write(google_sheets_df_row_add)
+                # update the google sheets database with new dataframe
+                gdb.update_google_sheets_db_2(google_sheets_df_row_add, worksheet)
 
-                # google_sheets_df_row_added = google_sheets_df.loc[]
-
-                # # update the google sheets database with form input
-                # gdb.update_google_sheets_db(row_to_add, current_date, temp_cred_file_path)
                 st.success("Submitted!")
             
             else:
