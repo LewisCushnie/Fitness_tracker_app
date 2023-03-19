@@ -48,7 +48,6 @@ strava_tokens = dd.get_strava_refresh_token(CLIENT_ID, CLIENT_SECRET, STRAVA_REF
 # f = open(temp_cred_file_path)
 
 google_sheets_df = gdb.get_google_sheets_as_df()
-
 st.write(google_sheets_df)
   
 # returns JSON object as 
@@ -58,6 +57,7 @@ st.write(google_sheets_df)
 # get current date
 current_date = date.today()
 
+# ====================== PAGE STARTS =============================
 st.title('Fitness Stats 🏃 🏋️ 🚴')
 st.info("You can't improve what you can't measure...")
 
@@ -66,7 +66,7 @@ st.info("You can't improve what you can't measure...")
 # ================================================================
 
 # get strava data from the api
-activities = dd.get_strava_data(current_date)
+activities = dd.get_strava_data_2(current_date, strava_tokens)
 
 # get maps locations
 maps_data = dd.get_key_locations()

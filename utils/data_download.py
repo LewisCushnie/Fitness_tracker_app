@@ -372,3 +372,73 @@ def get_strava_data(current_date):
         print(f'Loading strava_activity_data_{current_date}.pkl file...')
 
     return activities
+
+def get_strava_data_2(current_date, strava_tokens):
+
+    '''
+    This function scrapes wikipedia to return a list of S&P 500 tickers
+    '''
+
+    # Loop through all activities
+    page = 1
+    url = "https://www.strava.com/api/v3/activities"
+    access_token = strava_tokens['access_token']
+
+    # Create dataframe for desired data fields
+    activities = pd.DataFrame(
+        columns = [
+                "id"
+                ,"name"
+                ,"start_date_local"
+                ,"type"
+                ,"distance"
+                ,"moving_time"
+                ,"elapsed_time"
+                ,"total_elevation_gain"
+                ,"start_latlng"
+                ,"end_latlng"
+                ,"timezone"
+                ,"average_speed"
+                ,"max_speed"
+                ,"elev_high"
+                ,"elev_low"
+        ]
+    )
+
+    # get data from strava to populate dataframe
+    while True:
+        
+        # get page of activities from Strava
+        page_url = f'{url}?access_token={access_token}&per_page=200&page={str(page)}'
+        r = requests.get(page_url)
+        r = r.json()
+        
+        # if no results then exit loop
+        if (not r):
+            break
+        
+        # otherwise add new data to dataframe
+        for x in range(len(r)):
+            activities.loc[x + (page-1)*200,'id'] = r[x]['id']
+            activities.loc[x + (page-1)*200,'name'] = r[x]['name']
+            activities.loc[x + (page-1)*200,'start_date_local'] = r[x]['start_date_local']
+            activities.loc[x + (page-1)*200,'type'] = r[x]['type']
+            activities.loc[x + (page-1)*200,'distance'] = r[x]['distance']
+            activities.loc[x + (page-1)*200,'moving_time'] = r[x]['moving_time']
+            activities.loc[x + (page-1)*200,'elapsed_time'] = r[x]['elapsed_time']
+            activities.loc[x + (page-1)*200,'total_elevation_gain'] = r[x]['total_elevation_gain']
+            activities.loc[x + (page-1)*200,'start_latlng'] = r[x]['start_latlng']
+            activities.loc[x + (page-1)*200,'end_latlng'] = r[x]['end_latlng']
+            activities.loc[x + (page-1)*200,'timezone'] = r[x]['timezone']
+            activities.loc[x + (page-1)*200,'average_speed'] = r[x]['average_speed']
+            activities.loc[x + (page-1)*200,'max_speed'] = r[x]['max_speed']
+            activities.loc[x + (page-1)*200,'elev_high'] = r[x]['elev_high']
+            activities.loc[x + (page-1)*200,'elev_low'] = r[x]['elev_low']
+
+        # increment page
+        page += 1
+
+    # apply cleaning and transforms to df
+    activities = clean_and_enrich_strava_data(activities, current_date)
+
+    return activities
