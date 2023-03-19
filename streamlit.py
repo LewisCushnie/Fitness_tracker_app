@@ -109,11 +109,12 @@ with tab1:
             if submitted:
 
                 # convert date column to date
-                google_sheets_df['Date'] = pd.to_datetime(google_sheets_df['Date'])
-                google_sheets_df['Date'] = google_sheets_df['Date'].dt.date
+                google_sheets_df_row_add = google_sheets_df
+                google_sheets_df_row_add['Date'] = pd.to_datetime(google_sheets_df_row_add['Date'])
+                google_sheets_df_row_add['Date'] = google_sheets_df_row_add['Date'].dt.date
 
                 # find index of current date in dataframe
-                df_row = google_sheets_df.index[google_sheets_df['Date'] == current_date][0]
+                df_row = google_sheets_df_row_add.index[google_sheets_df_row_add['Date'] == current_date][0]
 
                 # add 2 because of index starting from 0 in pandas, and headings row
                 wks_row = df_row + 2
@@ -245,8 +246,6 @@ with tab3:
     # ----------------------------------------------------------------
 
     st.header('Physical Tracking')
-
-    st.write(google_sheets_df)
 
     # convert "" cells to NaN
     google_sheets_df = google_sheets_df.mask(google_sheets_df == '')
