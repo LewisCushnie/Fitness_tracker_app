@@ -31,25 +31,7 @@ with open("streamlit_utils/style.css") as f:
 CLIENT_ID = st.secrets["CLIENT_ID"]
 CLIENT_SECRET = st.secrets["CLIENT_SECRET"]
 STRAVA_REFRESH_TOKEN = st.secrets["STRAVA_REFRESH_TOKEN"]
-
 strava_tokens = dd.get_strava_refresh_token(CLIENT_ID, CLIENT_SECRET, STRAVA_REFRESH_TOKEN)
-
-# tfile = tempfile.NamedTemporaryFile(mode="w+")
-# st.write(type(tfile))
-# temp_cred_file_path = f'{tfile.name}.json'
-# st.write(temp_cred_file_path)
-
-# create file from google sheets credentials to authorise with
-# config, private_key = gdb._google_creds_as_file()
-
-# with open(temp_cred_file_path, 'a') as cred:
-#     json.dump(config, cred)
-
-# f = open(temp_cred_file_path)
-  
-# returns JSON object as 
-# a dictionary
-# data = json.load(f)
 
 # get current date
 current_date = date.today()
@@ -63,6 +45,7 @@ st.info("You can't improve what you can't measure...")
 # ================================================================
 
 # get strava data from the api
+
 activities = dd.get_strava_data_2(current_date, strava_tokens)
 
 # read data from the google sheets 'database'
@@ -77,6 +60,7 @@ tab1, tab2, tab3 = st.tabs(['Daily Form', 'Cardio Analysis', 'Physical Tracking'
 # ===================== SET GLOBAL VARIABLES =====================
 # ================================================================ 
 
+# DAILY FORM
 with tab1:
 
     def weight_form():
@@ -109,8 +93,10 @@ with tab1:
             
             if submitted:
 
-                # convert date column to date
+                # create a copy of the existing google sheets df
                 google_sheets_df_row_add = google_sheets_df.copy()
+
+                # convert date column to date so correct row index can be found
                 google_sheets_df_row_add['Date'] = pd.to_datetime(google_sheets_df_row_add['Date'])
                 google_sheets_df_row_add['Date'] = google_sheets_df_row_add['Date'].dt.date
 
@@ -120,15 +106,12 @@ with tab1:
                 # add data from the form submission to the dataframe
                 google_sheets_df_row_add.iloc[df_row] = row_to_add
 
+                # convert datetime back to string before pushing to database
                 google_sheets_df_row_add['Date'] = pd.to_datetime(google_sheets_df_row_add['Date'])
                 google_sheets_df_row_add['Date'] = google_sheets_df_row_add['Date'].dt.strftime('%Y-%m-%d')
 
-                st.write(google_sheets_df_row_add)
-
+                # push the changes to the google sheets database
                 worksheet.update([google_sheets_df_row_add.columns.values.tolist()] + google_sheets_df_row_add.values.tolist())
-
-                # # update the google sheets database with new dataframe
-                # gdb.update_google_sheets_db_2(google_sheets_df, worksheet)
 
                 st.success("Submitted!")
             
@@ -140,6 +123,7 @@ with tab1:
     # weight form to collect weight data
     weight = weight_form()
 
+# CARIDO ANALYSIS
 with tab2:
 
     line = '---'
@@ -245,9 +229,10 @@ with tab2:
         )
         st.altair_chart(cumulative_chart, use_container_width= True, theme= 'streamlit')
 
+# PHYSICAL TRACKING
 with tab3:
     # ----------------------------------------------------------------
-    # ------------------- WEIGHT TRACKING ----------------------------
+    # ------------------- PHYSICAL TRACKING --------------------------
     # ----------------------------------------------------------------
 
     st.header('Physical Tracking')
@@ -257,10 +242,13 @@ with tab3:
 
     # convert date column to datetime
     google_sheets_df['Date'] = pd.to_datetime(google_sheets_df['Date'])
+
     # set date as index to enable truncate
     google_sheets_df = google_sheets_df.set_index('Date')
+
     # only return records up to current date
     google_sheets_df = google_sheets_df.truncate(after= current_date)
+
     # reset index back to allow plotting later
     google_sheets_df = google_sheets_df.reset_index()
     google_sheets_df['Date'] = pd.to_datetime(google_sheets_df['Date'])
