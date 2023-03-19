@@ -122,7 +122,7 @@ with tab1:
 
                 st.write([google_sheets_df.columns.values.tolist()] + google_sheets_df.values.tolist())
 
-                google_sheets_df['Date'] = google_sheets_df.dt.strftime('%Y-%m-%d')
+                google_sheets_df['Date'] = google_sheets_df['Date'].dt.strftime('%Y-%m-%d')
 
                 # worksheet.update([google_sheets_df.columns.values.tolist()] + google_sheets_df.values.tolist())
 
