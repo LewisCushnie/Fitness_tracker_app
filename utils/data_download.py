@@ -13,7 +13,7 @@ from sklearn.metrics import DistanceMetric
 from datetime import datetime, timedelta
 import streamlit as st
 
-@st.cache_data
+@st.cache_data(ttl= 600)
 def get_strava_refresh_token(CLIENT_ID, CLIENT_SECRET, STRAVA_REFRESH_TOKEN):
 
     '''
@@ -71,7 +71,7 @@ def get_strava_tokens(CLIENT_ID, CLIENT_SECRET, code, reset):
         with open('utils/access_tokens/strava_tokens.json', 'w') as outfile:
             json.dump(strava_tokens, outfile)
 
-@st.cache_data
+@st.cache_data(ttl= 600)
 def get_maps_data():
     google_maps_df = pd.read_json('google_maps/Saved Places.json')
 
@@ -87,7 +87,7 @@ def get_maps_data():
 
     return google_maps_df
 
-@st.cache_data
+@st.cache_data(ttl= 600)
 def get_key_locations():
 
     data = {
@@ -246,7 +246,7 @@ def clean_and_enrich_strava_data(activities, current_date):
     
     return activities
 
-@st.cache_data
+@st.cache_data(ttl= 600)
 def get_strava_data(current_date, strava_tokens):
 
     '''
