@@ -280,3 +280,56 @@ with tab4:
         st.metric('Current mass (kg)'
                 ,current_mass
                 ,f'{perc_diff}%')
+
+    st.write('5K run times')
+
+    # find all runs
+    runs = strava_activities_df.loc[strava_activities_df['type'] == 'Run']
+
+    # find all 5K runs within specified allowable range
+    five_k_runs = runs.loc[runs['distance (km)'] >= 5]
+    five_k_runs = five_k_runs.loc[five_k_runs['distance (km)'] <= 5.2]
+
+    # find distance exceeding 5K
+    five_k_runs['extra distance (m)'] = (five_k_runs['distance (km)'] - 5)*1000
+
+    # find expected extra time (from the average speed)
+    five_k_runs['extra time (s)'] = (five_k_runs['extra distance (m)'])/(five_k_runs['average speed (m/s)'])
+
+    # find expected exact 5k time
+    five_k_runs['5k time (s)'] = (five_k_runs['moving time (min)']*60) - (five_k_runs['extra time (s)'])
+
+    def convert_to_preferred_format(sec):
+        sec = sec % (24 * 3600)
+        sec %= 3600
+        min = sec // 60
+        sec %= 60
+        return "%02d:%02d" % (min, sec) 
+
+    # expected time corrected for overrun and standing time
+    five_k_runs['5k time (mins)'] = five_k_runs['5k time (s)'].apply(convert_to_preferred_format)
+
+    # get pace per km
+    five_k_runs['Pace (mins/km)'] = ((five_k_runs['moving time (min)'])/(five_k_runs['distance (km)'])*60).apply(convert_to_preferred_format)
+
+    # get only the data I care about
+    five_k_runs_key_data = five_k_runs[['date', '5k time (mins)', 'Pace (mins/km)']]
+
+    # manually add some older times from run tracker app for context
+    run_tracker_5ks = pd.DataFrame(np.array(
+        [['2022-09-08', '28:10', '05:37'], 
+        ['2022-08-27', '26:09', '05:13'], 
+        ['2022-08-23', '24:15', '04:49'], 
+        ['2022-08-19', '24:28', '04:53'], 
+        ['2022-08-15', '24:39', '04:54']
+        ]),
+        columns=['date', '5k time (mins)', 'Pace (mins/km)'])
+
+    # union the two dataframes
+    five_k_runs_key_data = pd.concat([five_k_runs_key_data, run_tracker_5ks])
+
+    chart = alt.Chart(five_k_runs_key_data).mark_line().encode(
+        x = alt.X('date:O'),
+        y = alt.Y('5k time (mins):O', sort= 'descending')
+    )
+    st.altair_chart(chart, use_container_width= True, theme= 'streamlit')
