@@ -233,7 +233,6 @@ with tab4:
     # ------------------- PHYSICAL TRACKING --------------------------
     # ----------------------------------------------------------------
 
-    st.header('Physical Tracking')
 
     # convert "" cells to NaN
     google_sheets_df = google_sheets_df.mask(google_sheets_df == '')
@@ -262,27 +261,16 @@ with tab4:
         google_sheets_df[column_name] = google_sheets_df['Mass (kg)'].rolling(window=ma, center=False).mean()
         columns.append(column_name)
 
-    col1, col2 = st.columns(2)
+    # === MASS CALCS =====
+    # dataframe that contains only non-null mass and date data
+    non_null_mass = google_sheets_df.loc[google_sheets_df['Mass (kg)'].notnull(), ['Date', 'Mass (kg)']]
 
-    with col1:
-        chart = alt.Chart(google_sheets_df).mark_line().encode(
-            x = alt.X('Date:O'),
-            y = alt.Y('Mass (kg):Q', scale=alt.Scale(domain=[google_sheets_df['Mass (kg)'].min(), google_sheets_df['Mass (kg)'].max()]))
-        )
-        st.altair_chart(chart, use_container_width= True, theme= 'streamlit')
+    # get my most recent mass recording
+    current_mass = non_null_mass.iloc[len(non_null_mass)-1]['Mass (kg)']
+    starting_mass = non_null_mass['Mass (kg)'].iloc[0]
+    perc_diff = round(((current_mass-starting_mass)/starting_mass)*100, 1)
 
-    with col2:
-        starting_mass = google_sheets_df['Mass (kg)'].iloc[0]
-        current_mass = google_sheets_df['Mass (kg)'].loc[google_sheets_df['Date'] == current_date]
-        current_mass = current_mass.iloc[0]
-        perc_diff = round(((current_mass-starting_mass)/starting_mass)*100, 1)
-
-        st.metric('Current mass (kg)'
-                ,current_mass
-                ,f'{perc_diff}%')
-
-    st.write('5K run times')
-
+    # === RUN CALCS =====
     # find all runs
     runs = strava_activities_df.loc[strava_activities_df['type'] == 'Run']
 
@@ -327,6 +315,37 @@ with tab4:
 
     # union the two dataframes
     five_k_runs_key_data = pd.concat([five_k_runs_key_data, run_tracker_5ks])
+    # five_k_runs_key_data.sort_values(by='date', inplace = True) 
+    five_k_runs_key_data['date']= pd.to_datetime(five_k_runs_key_data['date'])
+    five_k_runs_key_data.sort_values(by='date', inplace = True) 
+    starting_five_k_time = five_k_runs_key_data.iloc[0]['5k time (mins)']
+    best_five_k_time = five_k_runs_key_data['5k time (mins)'].min()
+
+
+    # ======================= PLOTTING ============================
+
+    st.header('Physical Tracking')
+
+    col1, col2 = st.columns(2)
+    with col1:
+        st.metric('Current mass (kg)'
+            ,current_mass
+            ,f'{perc_diff}%')
+        
+    with col2:
+        st.metric('Best 5K time (mins-secs)'
+            ,best_five_k_time
+            ,starting_five_k_time)
+
+
+    st.header('Mass Tracking')
+    chart = alt.Chart(non_null_mass).mark_line().encode(
+        x = alt.X('Date:O'),
+        y = alt.Y('Mass (kg):Q', scale=alt.Scale(domain=[google_sheets_df['Mass (kg)'].min(), google_sheets_df['Mass (kg)'].max()]))
+    )
+    st.altair_chart(chart, use_container_width= True, theme= 'streamlit')
+
+    st.header('5K Time Tracking')
 
     chart = alt.Chart(five_k_runs_key_data).mark_line().encode(
         x = alt.X('date:O'),
