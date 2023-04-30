@@ -37,6 +37,11 @@ current_date = date.today()
 # ====================== PAGE STARTS =============================
 st.title('Fitness Stats 🏃 🏋️ 🚴')
 st.info("You can't improve what you can't measure...")
+st.info('''Current Objectives:
+- Eat breakfast every day
+- Gym Mondays, Wednesdays, Saturdays
+- Stretch every day in the morning
+        ''')
 
 # ================================================================
 # ================= GET DATA AND SET CONTEXT =====================
@@ -324,8 +329,13 @@ with tab4:
 
     # ======================= PLOTTING ============================
 
-    st.header('Physical Tracking')
+    target_mass = 76
+    target_time = '21:00'
 
+    non_null_mass['Target Mass (kg)'] = target_mass
+    five_k_runs_key_data['Target 5k time (mins)'] = target_time
+
+    st.header('Physical Tracking')
     col1, col2 = st.columns(2)
     with col1:
         st.metric('Current mass (kg)'
@@ -337,18 +347,22 @@ with tab4:
             ,best_five_k_time
             ,starting_five_k_time)
 
-
     st.header('Mass Tracking')
-    chart = alt.Chart(non_null_mass).mark_line().encode(
-        x = alt.X('Date:O'),
-        y = alt.Y('Mass (kg):Q', scale=alt.Scale(domain=[google_sheets_df['Mass (kg)'].min(), google_sheets_df['Mass (kg)'].max()]))
+    mass_chart = alt.Chart(non_null_mass).transform_fold(
+        ['Mass (kg)', 'Target Mass (kg)']
+    ).mark_line().encode(
+    x = alt.X('Date:O'),
+    y = alt.Y('value:Q', scale=alt.Scale(domain=[google_sheets_df['Mass (kg)'].min(), target_mass + 1])),
+    color = 'key:N'
     )
-    st.altair_chart(chart, use_container_width= True, theme= 'streamlit')
-
+    st.altair_chart(mass_chart, use_container_width= True, theme= 'streamlit')
+    
     st.header('5K Time Tracking')
-
-    chart = alt.Chart(five_k_runs_key_data).mark_line().encode(
-        x = alt.X('date:O'),
-        y = alt.Y('5k time (mins):O', sort= 'descending')
+    five_k_chart = alt.Chart(five_k_runs_key_data).transform_fold(
+        ['5k time (mins)', 'Target 5k time (mins)']
+    ).mark_line().encode(
+    x = alt.X('date:O'),
+    y = alt.Y('value:O', sort= 'descending'),
+    color = 'key:N'
     )
-    st.altair_chart(chart, use_container_width= True, theme= 'streamlit')
+    st.altair_chart(five_k_chart, use_container_width= True, theme= 'streamlit')
