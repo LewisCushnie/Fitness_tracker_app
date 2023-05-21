@@ -112,6 +112,9 @@ def clean_and_enrich_strava_data(activities, current_date):
     activities[['end_lat','end_long']] = pd.DataFrame(activities['end_latlng'].tolist()
                                                             , index= activities.index)
 
+    # remove any columns with null entries
+    activities = activities.dropna()                                
+
     # get maps locations
     maps_data = get_key_locations()
     
